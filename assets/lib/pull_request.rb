@@ -27,6 +27,18 @@ class PullRequest
     %w[OWNER COLLABORATOR MEMBER].include? @pr['author_association']
   end
 
+  def dependent_prs_merged?
+    # For all comments on the pull request...
+    Octokit.pull_comments(base_repo, id).all? do |c|
+      # If they're by someone we trust...
+      return true unless %w(OWNER COLLABORATOR MEMBER).include?(c['author_association'])
+      # Confirm that any PR they reference as a dependency is merged.
+      c['body'].scan(/depends: https:\/\/github.com\/(?<user>\w*)\/(?<repo>[\w-]*)\/pull\/(?<pr>\d*)/).all? {
+        |m| Octokit.pull_request(m[0] + "/" + m[1], m[2])['merged']
+      }
+    end
+  end
+
   def equals?(id:, sha:)
     [self.sha, self.id.to_s] == [sha, id.to_s]
   end
