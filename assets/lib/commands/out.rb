@@ -52,12 +52,12 @@ module Commands
         # First we fetch the branch.  There's a hundred ways to do this, and this is one of them.
         branch = Dir.chdir(path) { `git symbolic-ref --short HEAD`.chomp }
         # Then we fetch the remote URL.  We use 'origin' by default, overrideable by pullrequest.remote.
-        which_remote = Dir.chdir(path) { `git config --get pullrequest.remote` }
+        which_remote = Dir.chdir(path) { `git config --get pullrequest.remote`.chomp }
         which_remote = "origin" if which_remote.blank?
-        remote = Dir.chdir(path) { `git remote get-url #{which_remote}` }
+        remote = Dir.chdir(path) { `git remote get-url #{which_remote}`.chomp }
         # Could be git@github.com:user/repo.git *or* https://github.com/user/repo.git.
         # Need to fetch 'user' and 'repo' separately.
-        m = /(?:https:\/\/|git@)github.com(?::|\/)(?<user>\w*)\/(?<repo>[\w-]*)(?:.git)?/.match(remote)
+        m = /(?:https:\/\/|git@)github.com(?::|\/)(?<user>[\w-]*)\/(?<repo>[\w-]*)(?:.git)?/.match(remote)
         # Error handling here.
         raise %(Remote origin ("#{remote}") does not match GitHub regex.  Remote must be on GitHub.) unless m
         unless input.source.repo.end_with?(m['repo'])
