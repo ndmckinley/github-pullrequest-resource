@@ -7,11 +7,12 @@ require_relative 'filters/path'
 require_relative 'filters/ci_skip'
 require_relative 'filters/mergeable'
 require_relative 'filters/approval'
+require_relative 'filters/dependent_prs'
 
 class Repository
   attr_reader :name
 
-  def initialize(name:, input: Input.instance, filters: [Filters::All, Filters::Path, Filters::Fork, Filters::Label, Filters::CISkip, Filters::Mergeable, Filters::Approval])
+  def initialize(name:, input: Input.instance, filters: [Filters::All, Filters::Path, Filters::Fork, Filters::Label, Filters::CISkip, Filters::Mergeable, Filters::Approval, Filters::Dependents])
     @filters = filters
     @name    = name
     @input   = input
