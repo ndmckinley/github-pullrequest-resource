@@ -35,7 +35,7 @@ class PullRequest
       return true unless %w(OWNER COLLABORATOR MEMBER CONTRIBUTOR).include?(c['author_association'])
       # Confirm that any PR they reference as a dependency is merged.
       c[:body].scan(/depends: https:\/\/github.com\/(?<user>[\w-]*)\/(?<repo>[\w-]*)\/pull\/(?<pr>\d*)/).all? {
-        |m| Octokit.pull_request(m[0] + "/" + m[1], m[2])[:merged]
+        |m| Octokit.pull_request(m[0] + '/' + m[1], m[2])[:state] == 'closed'
       }
     end
   end
