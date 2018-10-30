@@ -86,11 +86,15 @@ module Commands
           if tries < 3
             sleep 10
             retry
+          else
+            raise
           end
         rescue Octokit::ServerError
           if tries < 5
             sleep 10
             retry
+          else
+            raise
           end
         end
         metadata << { 'name' => 'merge', 'value' => params.merge.method }

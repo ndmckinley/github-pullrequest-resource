@@ -5,6 +5,7 @@ source 'https://rubygems.org'
 ruby '~> 2.4'
 
 gem 'activesupport'
+gem 'bigdecimal'
 gem 'faraday-http-cache'
 gem 'httpclient'
 gem 'octokit'
