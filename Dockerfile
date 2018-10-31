@@ -10,8 +10,11 @@ RUN set -ex; \
   openssh-client \
   perl \
   ruby \
+  ruby-dev \
   ruby-json \
   ruby-bundler \
+  openssl-dev \
+  alpine-sdk \
   ; \
   rm -rf /var/cache/apk/*;
 

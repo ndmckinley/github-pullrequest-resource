@@ -9,7 +9,7 @@ resource only support *GITHUB*.
 
 ## Deploying to Concourse
 
-You can use the docker image by defining the [resource type](http://concourse.ci/configuring-resource-types.html) in your pipeline YAML.
+You can use the docker image by defining the [resource type](https://concourse-ci.org/resource-types.html) in your pipeline YAML.
 
 For example:
 
@@ -40,6 +40,9 @@ resource_types:
 * `base_url`: *Optional* The base URL for the Concourse deployment, used for
   linking to builds. On newer versions of Concourse ( >= v0.71.0) , the resource will
   automatically sets the URL.
+
+  This supports the [build environment](https://concourse-ci.org/implementing-resources.html#resource-metadata)
+  variables provided by concourse. For example, `context: $BUILD_JOB_NAME` will set the context to the job name.
 
 * `private_key`: *Optional.* Private key to use when pulling/pushing.
     Example:
@@ -122,6 +125,7 @@ git config --get pullrequest.body       # returns the PR body
 git config --get pullrequest.basebranch # returns the base branch used for the pull request
 git config --get pullrequest.basesha    # returns the commit of the base branch used for the pull request
 git config --get pullrequest.userlogin  # returns the github user login for the pull request author
+git config --get pullrequest.repo       # returns the full name of the source repo of the PR.
 ```
 
 
@@ -142,6 +146,8 @@ git config --get pullrequest.userlogin  # returns the github user login for the 
  * `.git/head_sha`: the latest commit hash of the branch associated with the pull request
 
  * `.git/body`: the body of the pull request.
+
+ * `.git/repo`: the full name of the source repo of the PR.
 
 #### Parameters
 
@@ -167,13 +173,13 @@ Set the status message for `concourse-ci` context on specified pull request.
 * `path`: *Required.* The path of the repository to reference the pull request.
 
 * `status`: *Required.* The status of success, failure, error, or pending.
-  * [`on_success`](https://concourse.ci/on-success-step.html) and [`on_failure`](https://concourse.ci/on-failure-step.html) triggers may be useful for you when you wanted to reflect build result to the PR (see the example below).
+  * [`on_success`](https://concourse-ci.org/on-success-step-hook.html#on_success) and [`on_failure`](https://concourse-ci.org/on-failure-step-hook.html#on_failure) triggers may be useful for you when you wanted to reflect build result to the PR (see the example below).
 
 * `context`: *Optional.* The context on the specified pull request
   (defaults to `status`). Any context will be prepended with `concourse-ci`, so
   a context of `unit-tests` will appear as `concourse-ci/unit-tests` on Github.
 
-  This supports the [build environment](http://concourse.ci/implementing-resources.html#resource-metadata)
+  This supports the [build environment](https://concourse-ci.org/implementing-resources.html#resource-metadata)
   variables provided by concourse. For example, `context: $BUILD_JOB_NAME` will set the context to the job name.
 
 * `comment`: *Optional.* The file path of the comment message. Comment owner is same with the owner of `access_token`.
@@ -181,6 +187,8 @@ Set the status message for `concourse-ci` context on specified pull request.
 * `merge.method`: *Optional.* Use this to merge the PR into the target branch of the PR. There are three available merge methods -- `merge`, `squash`, or `rebase`. Please this [doc](https://developer.github.com/changes/2016-09-26-pull-request-merge-api-update/) for more information.
 
 * `merge.commit_msg`: *Optional.* Used with `merge` to set the commit message for the merge. Specify a file path to the merge commit message.
+
+* `label`: *Optional.* A label to add to the pull request.
 
 ## Example pipeline
 

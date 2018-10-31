@@ -41,6 +41,13 @@ module Commands
         version = { 'ref' => sha }
       else
         pr = PullRequest.from_github(repo: repo, id: id)
+        if sha == pr.merge_commit_sha
+          # If the SHA that we have here is the merge commit's SHA,
+          # we know that the correct SHA is the one at the tip of
+          # the PR (which might be the same as the merge SHA if
+          # there's no need for a merge).
+          sha = pr.sha
+        end
         metadata << { 'name' => 'url', 'value' => pr.url }
         version = { 'pr' => id, 'ref' => sha }
       end
@@ -52,7 +59,7 @@ module Commands
       contextes.each do |context|
         Status.new(
           state: params.status,
-          atc_url: atc_url,
+          atc_url: whitelist(context: atc_url),
           sha: sha,
           repo: repo,
           context: whitelist(context: context)
@@ -66,14 +73,37 @@ module Commands
         metadata << { 'name' => 'comment', 'value' => comment }
       end
 
+      if params.label
+        Octokit.add_labels_to_an_issue(input.source.repo, id, [params.label])
+        metadata << { 'name' => 'label', 'value' => params.label }
+      end
+
       if params.merge.method
         commit_msg = if params.merge.commit_msg
                        commit_path = File.join(destination, params.merge.commit_msg)
                        File.read(commit_path, encoding: Encoding::UTF_8)
                      else
                        ''
+                     end
+        tries = 0
+        begin
+          tries += 1
+          Octokit.merge_pull_request(input.source.repo, id, commit_msg, merge_method: params.merge.method, accept: 'application/vnd.github.polaris-preview+json')
+        rescue Octokit::ClientError
+          if tries < 3
+            sleep 10
+            retry
+          else
+            raise
+          end
+        rescue Octokit::ServerError
+          if tries < 5
+            sleep 10
+            retry
+          else
+            raise
+          end
         end
-        Octokit.merge_pull_request(input.source.repo, id, commit_msg, merge_method: params.merge.method, accept: 'application/vnd.github.polaris-preview+json')
         metadata << { 'name' => 'merge', 'value' => params.merge.method }
         metadata << { 'name' => 'merge_commit_msg', 'value' => commit_msg }
       end
