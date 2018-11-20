@@ -22,9 +22,12 @@ module Commands
 
       raise 'PR has merge conflicts' if pr['mergeable'] == false && fetch_merge
 
-      system("git clone #{depth_flag} --branch #{pr['base']['ref']} #{uri} #{destination} 1>&2")
-
-      raise 'git clone failed' unless $CHILD_STATUS.exitstatus.zero?
+      unless input.params.skip_clone
+        system("git clone #{depth_flag} --branch #{pr['base']['ref']} #{uri} #{destination} 1>&2")
+        raise 'git clone failed' unless $CHILD_STATUS.exitstatus.zero?
+      else
+        system("mkdir -p #{destination}/.git")
+      end
 
       Dir.chdir(File.join(destination, '.git')) do
         File.write('url', pr['html_url'])
@@ -37,32 +40,34 @@ module Commands
         File.write('head_sha', pr['head']['sha'])
       end
 
-      Dir.chdir(destination) do
-        raise 'git clone failed' unless system("git fetch #{depth_flag} -q origin pull/#{id}/#{remote_ref}:#{branch_ref} 1>&2")
+      unless input.params.skip_clone
+        Dir.chdir(destination) do
+          raise 'git clone failed' unless system("git fetch #{depth_flag} -q origin pull/#{id}/#{remote_ref}:#{branch_ref} 1>&2")
 
-        system <<-BASH
-          git checkout #{branch_ref} 1>&2
-          git config --add pullrequest.url #{pr['html_url'].to_s.shellescape} 1>&2
-          git config --add pullrequest.id #{pr['number'].to_s.shellescape} 1>&2
-          git config --add pullrequest.body #{pr['body'].to_s.shellescape} 1>&2
-          git config --add pullrequest.branch #{pr['head']['ref'].to_s.shellescape} 1>&2
-          git config --add pullrequest.basebranch #{pr['base']['ref'].to_s.shellescape} 1>&2
-          git config --add pullrequest.basesha #{pr['base']['sha'].to_s.shellescape} 1>&2
-          git config --add pullrequest.userlogin #{pr['user']['login'].to_s.shellescape} 1>&2
-        BASH
+          system <<-BASH
+            git checkout #{branch_ref} 1>&2
+            git config --add pullrequest.url #{pr['html_url'].to_s.shellescape} 1>&2
+            git config --add pullrequest.id #{pr['number'].to_s.shellescape} 1>&2
+            git config --add pullrequest.body #{pr['body'].to_s.shellescape} 1>&2
+            git config --add pullrequest.branch #{pr['head']['ref'].to_s.shellescape} 1>&2
+            git config --add pullrequest.basebranch #{pr['base']['ref'].to_s.shellescape} 1>&2
+            git config --add pullrequest.basesha #{pr['base']['sha'].to_s.shellescape} 1>&2
+            git config --add pullrequest.userlogin #{pr['user']['login'].to_s.shellescape} 1>&2
+          BASH
 
-        case input.params.git.submodules
-        when 'all', nil
-          system("git submodule update --init --recursive #{depth_flag} 1>&2")
-        when Array
-          input.params.git.submodules.each do |path|
-            system("git submodule update --init --recursive #{depth_flag} #{path} 1>&2")
+          case input.params.git.submodules
+          when 'all', nil
+            system("git submodule update --init --recursive #{depth_flag} 1>&2")
+          when Array
+            input.params.git.submodules.each do |path|
+              system("git submodule update --init --recursive #{depth_flag} #{path} 1>&2")
+            end
           end
-        end
 
-        unless input.params.git.disable_lfs
-          system('git lfs fetch 1>&2')
-          system('git lfs checkout 1>&2')
+          unless input.params.git.disable_lfs
+            system('git lfs fetch 1>&2')
+            system('git lfs checkout 1>&2')
+          end
         end
       end
 
