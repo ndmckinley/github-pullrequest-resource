@@ -30,6 +30,7 @@ module Commands
         File.write('url', pr['html_url'])
         File.write('id', pr['number'])
         File.write('body', pr['body'])
+        File.write('title', pr['title'])
         File.write('branch', pr['head']['ref'])
         File.write('base_branch', pr['base']['ref'])
         File.write('base_sha', pr['base']['sha'])
@@ -45,6 +46,7 @@ module Commands
           git config --add pullrequest.url #{pr['html_url'].to_s.shellescape} 1>&2
           git config --add pullrequest.id #{pr['number'].to_s.shellescape} 1>&2
           git config --add pullrequest.body #{pr['body'].to_s.shellescape} 1>&2
+          git config --add pullrequest.title #{pr['title'].to_s.shellescape} 1>&2
           git config --add pullrequest.branch #{pr['head']['ref'].to_s.shellescape} 1>&2
           git config --add pullrequest.basebranch #{pr['base']['ref'].to_s.shellescape} 1>&2
           git config --add pullrequest.basesha #{pr['base']['sha'].to_s.shellescape} 1>&2
