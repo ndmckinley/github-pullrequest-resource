@@ -188,7 +188,7 @@ Set the status message for `concourse-ci` context on specified pull request.
 
 * `merge.commit_msg`: *Optional.* Used with `merge` to set the commit message for the merge. Specify a file path to the merge commit message.
 
-* `label`: *Optional.* A label to add to the pull request.
+* `label`: *Optional.* A label to add to the pull request. Accepts one label or an array of labels.
 
 ## Example pipeline
 

@@ -74,7 +74,12 @@ module Commands
       end
 
       if params.label
-        Octokit.add_labels_to_an_issue(input.source.repo, id, [params.label])
+        label = if params.label.is_a?(Array)
+                  params.label
+                else
+                  [params.label]
+                end
+        Octokit.add_labels_to_an_issue(input.source.repo, id, label)
         metadata << { 'name' => 'label', 'value' => params.label }
       end
 
