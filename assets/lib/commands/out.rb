@@ -80,7 +80,7 @@ module Commands
                   [params.label]
                 end
         Octokit.add_labels_to_an_issue(input.source.repo, id, label)
-        metadata << { 'name' => 'label', 'value' => params.label }
+        metadata << { 'name' => 'label', 'value' => label }
       end
 
       if params.label_file

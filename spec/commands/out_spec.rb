@@ -211,7 +211,7 @@ describe Commands::Out do
                              'metadata' => [
                                { 'name' => 'status', 'value' => 'success' },
                                { 'name' => 'url', 'value' => 'http://example.com' },
-                               { 'name' => 'label', 'value' => 'test_label' },
+                               { 'name' => 'label', 'value' => ['test_label'] },
                              ])
       end
     end
