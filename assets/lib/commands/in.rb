@@ -56,7 +56,7 @@ module Commands
             git config --add pullrequest.basebranch #{pr['base']['ref'].to_s.shellescape} 1>&2
             git config --add pullrequest.basesha #{pr['base']['sha'].to_s.shellescape} 1>&2
             git config --add pullrequest.userlogin #{pr['user']['login'].to_s.shellescape} 1>&2
-            git config --add pullrequest.repo #{pr['head']['repo'].to_s.shellescape} 1>&2
+            git config --add pullrequest.repo #{pr['head']['repo']['full_name'].to_s.shellescape} 1>&2
           BASH
 
           case input.params.git.submodules
