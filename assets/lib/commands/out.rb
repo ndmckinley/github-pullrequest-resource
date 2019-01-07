@@ -86,7 +86,7 @@ module Commands
       if params.label_file
         label_path = File.join(destination, params.label_file)
         labels = File.read(label_path, encoding: Encoding::UTF_8)
-        labels_array = labels.split(',')
+        labels_array = labels.split(',').map(&:strip)
         Octokit.add_labels_to_an_issue(input.source.repo, id, labels_array)
         metadata << { 'name' => 'label', 'value' => labels_array }
       end
