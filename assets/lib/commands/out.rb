@@ -80,7 +80,7 @@ module Commands
                   [params.label]
                 end
         Octokit.add_labels_to_an_issue(input.source.repo, id, label)
-        metadata << { 'name' => 'label', 'value' => label }
+        metadata << { 'name' => 'label', 'value' => label.to_s }
       end
 
       if params.label_file
@@ -88,7 +88,7 @@ module Commands
         labels = File.read(label_path, encoding: Encoding::UTF_8)
         labels_array = labels.split(',').map(&:strip)
         Octokit.add_labels_to_an_issue(input.source.repo, id, labels_array)
-        metadata << { 'name' => 'label', 'value' => labels_array }
+        metadata << { 'name' => 'label', 'value' => labels_array.to_s }
       end
 
       if params.merge.method
