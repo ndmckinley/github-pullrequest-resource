@@ -70,6 +70,10 @@ resource_types:
 * `authorship_restriction`: *Optional*, default false.  If set to `true`, will only
   return PRs created by someone who is a collaborator, repo owner, or organization member.
 
+* `community_only`: *Optional*, default false.  The opposite of `authorship_restriction` -
+  if set to true, will only return PRs created by someone who is not a collaborator, repo owner,
+  or organization member.
+
 * `label`: *Optional.* If set to a string it will only return pull requests that have been
 marked with that specific label. It is case insensitive.
 
