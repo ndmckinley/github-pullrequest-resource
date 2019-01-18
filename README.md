@@ -55,6 +55,8 @@ resource_types:
       -----END RSA PRIVATE KEY-----
     ```
 
+* `assignee`: *Optional.* If specified, add this username to the assignee list.
+
 * `api_endpoint`: *Optional.* If the repository is located on a GitHub Enterprise
   instance you need to specify the base api endpoint (e.g. "https://\<hostname\>/api/v3/").
 

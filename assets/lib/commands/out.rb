@@ -73,6 +73,12 @@ module Commands
         metadata << { 'name' => 'comment', 'value' => comment }
       end
 
+      if params.assignee
+        assignee_path = File.join(destination, assignee)
+        assignee = File.read(assignee_path, encoding: Encoding::UTF_8)
+        Octokit.add_assignees(input.source.repo, id, [assignee])
+      end
+
       if params.label
         label = if params.label.is_a?(Array)
                   params.label
