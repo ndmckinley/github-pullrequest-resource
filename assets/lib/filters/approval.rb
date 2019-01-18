@@ -14,6 +14,9 @@ module Filters
       if @input.source.authorship_restriction
         @pull_requests.delete_if { |x| !x.author_associated? }
       end
+      if @input.source.community_only
+        @pull_requests.delete_if { |x| x.author_associated? }
+      end
 
       @pull_requests
     end
